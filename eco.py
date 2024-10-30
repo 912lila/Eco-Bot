@@ -1,58 +1,110 @@
 import discord
 import random
+import os
 from discord.ext import commands
+
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix = "/", intents = intents)
+bot = commands.Bot(command_prefix='$', intents=intents)
 
 @bot.event
-async  def on_ready():
-    print(f"Se inicio como {bot.user}")
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
 
-ideas = ["1.Usa botellas de plástico vacías, latas🥫 o cajas de cartón📦 para hacer macetas🌱", "2.Haz papel📄 reciclado♻ a partir de periódicos📰 viejos o hojas usadas📃", "3.Usa cajas📦 de cereales🥣 o cajas📦 de zapatos👞 para hacer organizadores de escritorio o estantes pequeños", "4. Convierte frascos de vidrio en lámparas decorativas colocando una luz💡 LED dentro ", "5.Reúne palitos de helado🍦 limpios y pégalos para formar marcos de fotos🎞"]
-
-reciclables = ["botella de plastico", "papel","carton"]
-basura = ["empaques de papitas", "copitos","jeringas"]
-
-frases = ["Separa tus desechos y recicla♻ siempre que puedas.", "Usa bombillas💡 LED, son más eficientes y duran más que las incandescentes.", "Crea un jardín🌱, cultiva tus propias plantas🌷 o verduras🍅.", "Anima a otros a usar bicicletas🚲 para desplazamientos cortos.","Informa a otros sobre la importancia de cuidar el medio ambiente🌎.", "Reduce el consumo de energía⚡, desconecta los dispositivos📱 que no estés usando"]
-
-materiales = ["papel", "vidrio", "bolsa de plastico", "botella de plastico", "pilas", "chicle", "poliestireno", "lata", "globo"]
-tiempo = ["2 a 5 meses", "indefinido(puede tardar 4.000 años o más)", "150 a 500 años", "100 a 1,000 años", "500 a 1,000 años", "5 años", "Más de 1,000 años", "10 a 100 años", "6 meses (látex) hasta varios años (plástico)"]
+tipo_meme = ["programacion", "musica", "famosos"]    
 
 @bot.command()
-async def manualidades(ctx):
-    await ctx.send(random.choice(ideas))
+async def hello(ctx):
+    await ctx.send(f'Hola, soy un bot {bot.user}!')
+    
+    hi = ["https://tenor.com/view/hello-hi-minion-gif-13004117825953885603",
+          "https://tenor.com/view/kermit-kermit-the-frog-hello-hello-everyone-muppets-gif-6287263276957406125",
+          "https://tenor.com/view/jim-carrey-derp-hello-tape-gif-3190819386124687142",
+          "https://tenor.com/view/mandalorian-baby-yoda-hello-gif-17841283562417351200"]
+    await ctx.send(random.choice(hi))
 
 @bot.command()
-async def clasificar(ctx,*,objeto:str):
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
 
-    if objeto in reciclables:
-        await ctx.send(f"El objeto {objeto} es reciclable♻")
+@bot.command()
+async def calculadora(ctx, operacion = "", num1 = 0, num2 = 0):
+    if operacion  == "suma":
+        resultado = num1 + num2
 
-    elif objeto in basura:
-        await ctx.send(f"El objeto {objeto} no🚫 es reciclable♻")
+    elif operacion  == "resta":
+        resultado = num1 - num2  
 
+    elif operacion  == "multiplicacion" or operacion == "multiplicación":
+        resultado = num1 * num2
+
+    elif operacion  == "division" or operacion == "división":
+        if num2 != 0:   
+            resultado = num1 / num2
+
+    else: 
+        await ctx.send("Esta calculadora es de matemáticas básicas: + - x ÷")
+        return
+
+    await ctx.send(f"El resultado de tu {operacion} es: {resultado}")      
+
+@bot.command()
+async def moneda(ctx, flip = ""):
+    flip = random.randint(0,2)
+    if flip == 0:
+        await ctx.send("CARA!!")
     else:
-        await ctx.send("Aun no estoy entrenado para identificar el objeto")
+        await ctx.send("CRUZ!!") 
 
 @bot.command()
-async def descomposicion(ctx,*,material:str):
-    material = material.lower()
-    found = False
-
-    for i in range(len(materiales)):
-        if materiales[i] == material:
-            await ctx.send(f"El tiempo de descomposición de {material} es: {tiempo[i]}.")
-            found = True
-            break
-
-    if not found:
-        await ctx.send("No tengo información sobre este material.")   
-
-@bot.command()
-async def consejos(ctx):
+async def frases_motivadoras(ctx):
+    frases = [
+                "No tengas miedo de fallar, ten miedo de no intentarlo",
+                "Cree en ti mismo, el mundo necesita tu luz",
+                "El éxito no es definitivo; el fracaso no es fatal. Lo que realmente cuenta es tener valor para continuar",
+                "Ganar es difícil, pero nunca imposible",
+                "Si creo y confío en mí mismo, podré conseguir todos mis objetivos",
+                "No importa lo lento que vayas, siempre y cuando no te detengas",
+                "La vida nos enseña muchas leciones depende de nosotros aprenderlas",
+                "Haz de cada día una obra maestra",
+                "Deséalo, espéralo, suéñalo, pero por todos los medios… ¡Hazlo!",
+                "Si siempre te concentras en lo que te falta, nunca tendrás lo suficiente",
+                "Hasta que no te valores a ti mismo, no valorarás tu tiempo. Hasta que no valores tu tiempo, no harás nada con él"]    
     await ctx.send(random.choice(frases))
+
+
+@bot.command()
+async def meme(ctx,*,tipo:str):
+    lista = os.listdir("img")
+    
+
+    imgenviar = random.choice(lista)
+
+    with open(f"img/{imgenviar}", "rb") as f:
+
+        imagen = discord.File(f)
+
+    await ctx.send(file = imagen)    
+
+@bot.command()
+async def bye(ctx):
+    await ctx.send("https://tenor.com/view/bai-see-you-later-bye-adios-got-to-go-gif-21054483")   
+
+@bot.command()
+async def musica(ctx):
+    await ctx.send("https://youtu.be/6Mgqbai3fKo?si=8vLmsuFmB5I6hdEE")     
+
+@bot.command()
+async def ayuda(ctx):
+    comandos = """Comandos: 
+    -hello: Saludo👋 del bot
+    -heh: El bot🤖 te dira "he" repetido el número de veces que indiques
+    -calculadora: Realiza operaciones matematicas basicas + - x ÷
+    -moneda: Lanza una moneda (cara o cruz)
+    -frases_motivadoras: El bot🤖 te envia una frase motivacional 
+    -meme: El bot🤖 te envia un meme"""
+    await ctx.send(comandos)
 
 bot.run("TOKEN") 
